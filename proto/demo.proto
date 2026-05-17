@@ -1,0 +1,11 @@
+// 第一行: 必须声明语法的版本
+syntax = "proto3";
+
+// 第二行: 包名(防止命名冲突,类似 Go 的 package)
+package myapp;
+
+// 第三行: Go 代码生成的包路径
+option go_package = "./myapp";
+
+// 后面就是消息和服务的定义
+
