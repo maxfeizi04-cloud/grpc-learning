@@ -25,6 +25,7 @@ const (
 	Bookstore_ListBooks_FullMethodName   = "/bookstore.Bookstore/ListBooks"
 	Bookstore_UpdateStock_FullMethodName = "/bookstore.Bookstore/UpdateStock"
 	Bookstore_DeleteBook_FullMethodName  = "/bookstore.Bookstore/DeleteBook"
+	Bookstore_SearchBooks_FullMethodName = "/bookstore.Bookstore/SearchBooks"
 )
 
 // BookstoreClient is the client API for Bookstore service.
@@ -38,6 +39,7 @@ type BookstoreClient interface {
 	ListBooks(ctx context.Context, in *ListBooksRequest, opts ...grpc.CallOption) (*ListBooksResponse, error)
 	UpdateStock(ctx context.Context, in *UpdateStockRequest, opts ...grpc.CallOption) (*UpdateStockResponse, error)
 	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SearchBooks(ctx context.Context, in *SearchBooksRequest, opts ...grpc.CallOption) (*SearchBooksResponse, error)
 }
 
 type bookstoreClient struct {
@@ -98,6 +100,16 @@ func (c *bookstoreClient) DeleteBook(ctx context.Context, in *DeleteBookRequest,
 	return out, nil
 }
 
+func (c *bookstoreClient) SearchBooks(ctx context.Context, in *SearchBooksRequest, opts ...grpc.CallOption) (*SearchBooksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchBooksResponse)
+	err := c.cc.Invoke(ctx, Bookstore_SearchBooks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookstoreServer is the server API for Bookstore service.
 // All implementations must embed UnimplementedBookstoreServer
 // for forward compatibility.
@@ -109,6 +121,7 @@ type BookstoreServer interface {
 	ListBooks(context.Context, *ListBooksRequest) (*ListBooksResponse, error)
 	UpdateStock(context.Context, *UpdateStockRequest) (*UpdateStockResponse, error)
 	DeleteBook(context.Context, *DeleteBookRequest) (*emptypb.Empty, error)
+	SearchBooks(context.Context, *SearchBooksRequest) (*SearchBooksResponse, error)
 	mustEmbedUnimplementedBookstoreServer()
 }
 
@@ -133,6 +146,9 @@ func (UnimplementedBookstoreServer) UpdateStock(context.Context, *UpdateStockReq
 }
 func (UnimplementedBookstoreServer) DeleteBook(context.Context, *DeleteBookRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteBook not implemented")
+}
+func (UnimplementedBookstoreServer) SearchBooks(context.Context, *SearchBooksRequest) (*SearchBooksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SearchBooks not implemented")
 }
 func (UnimplementedBookstoreServer) mustEmbedUnimplementedBookstoreServer() {}
 func (UnimplementedBookstoreServer) testEmbeddedByValue()                   {}
@@ -245,6 +261,24 @@ func _Bookstore_DeleteBook_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bookstore_SearchBooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchBooksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookstoreServer).SearchBooks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bookstore_SearchBooks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookstoreServer).SearchBooks(ctx, req.(*SearchBooksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bookstore_ServiceDesc is the grpc.ServiceDesc for Bookstore service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -271,6 +305,10 @@ var Bookstore_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteBook",
 			Handler:    _Bookstore_DeleteBook_Handler,
+		},
+		{
+			MethodName: "SearchBooks",
+			Handler:    _Bookstore_SearchBooks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

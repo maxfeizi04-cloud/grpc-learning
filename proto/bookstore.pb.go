@@ -677,6 +677,103 @@ func (x *DeleteBookRequest) GetId() string {
 	return ""
 }
 
+// 检索书籍
+type SearchBooksRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Keyword       string                 `protobuf:"bytes,1,opt,name=keyword,proto3" json:"keyword,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchBooksRequest) Reset() {
+	*x = SearchBooksRequest{}
+	mi := &file_bookstore_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchBooksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchBooksRequest) ProtoMessage() {}
+
+func (x *SearchBooksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_bookstore_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchBooksRequest.ProtoReflect.Descriptor instead.
+func (*SearchBooksRequest) Descriptor() ([]byte, []int) {
+	return file_bookstore_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SearchBooksRequest) GetKeyword() string {
+	if x != nil {
+		return x.Keyword
+	}
+	return ""
+}
+
+type SearchBooksResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Books         []*Book                `protobuf:"bytes,1,rep,name=books,proto3" json:"books,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchBooksResponse) Reset() {
+	*x = SearchBooksResponse{}
+	mi := &file_bookstore_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchBooksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchBooksResponse) ProtoMessage() {}
+
+func (x *SearchBooksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_bookstore_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchBooksResponse.ProtoReflect.Descriptor instead.
+func (*SearchBooksResponse) Descriptor() ([]byte, []int) {
+	return file_bookstore_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *SearchBooksResponse) GetBooks() []*Book {
+	if x != nil {
+		return x.Books
+	}
+	return nil
+}
+
+func (x *SearchBooksResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 var File_bookstore_proto protoreflect.FileDescriptor
 
 const file_bookstore_proto_rawDesc = "" +
@@ -725,7 +822,12 @@ const file_bookstore_proto_rawDesc = "" +
 	"\x04book\x18\x01 \x01(\v2\x0f.bookstore.BookR\x04book\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"#\n" +
 	"\x11DeleteBookRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id*\x9e\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\".\n" +
+	"\x12SearchBooksRequest\x12\x18\n" +
+	"\akeyword\x18\x01 \x01(\tR\akeyword\"R\n" +
+	"\x13SearchBooksResponse\x12%\n" +
+	"\x05books\x18\x01 \x03(\v2\x0f.bookstore.BookR\x05books\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total*\x9e\x01\n" +
 	"\fBookCategory\x12\x1d\n" +
 	"\x19BOOK_CATEGORY_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15BOOK_CATEGORY_FICTION\x10\x01\x12\x1c\n" +
@@ -754,7 +856,7 @@ func file_bookstore_proto_rawDescGZIP() []byte {
 }
 
 var file_bookstore_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_bookstore_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_bookstore_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_bookstore_proto_goTypes = []any{
 	(BookCategory)(0),             // 0: bookstore.BookCategory
 	(*Book)(nil),                  // 1: bookstore.Book
@@ -767,35 +869,38 @@ var file_bookstore_proto_goTypes = []any{
 	(*UpdateStockRequest)(nil),    // 8: bookstore.UpdateStockRequest
 	(*UpdateStockResponse)(nil),   // 9: bookstore.UpdateStockResponse
 	(*DeleteBookRequest)(nil),     // 10: bookstore.DeleteBookRequest
-	nil,                           // 11: bookstore.Book.MetadataEntry
-	(*timestamppb.Timestamp)(nil), // 12: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 13: google.protobuf.Empty
+	(*SearchBooksRequest)(nil),    // 11: bookstore.SearchBooksRequest
+	(*SearchBooksResponse)(nil),   // 12: bookstore.SearchBooksResponse
+	nil,                           // 13: bookstore.Book.MetadataEntry
+	(*timestamppb.Timestamp)(nil), // 14: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 15: google.protobuf.Empty
 }
 var file_bookstore_proto_depIdxs = []int32{
 	0,  // 0: bookstore.Book.category:type_name -> bookstore.BookCategory
-	12, // 1: bookstore.Book.published_at:type_name -> google.protobuf.Timestamp
-	11, // 2: bookstore.Book.metadata:type_name -> bookstore.Book.MetadataEntry
+	14, // 1: bookstore.Book.published_at:type_name -> google.protobuf.Timestamp
+	13, // 2: bookstore.Book.metadata:type_name -> bookstore.Book.MetadataEntry
 	0,  // 3: bookstore.CreateBookRequest.category:type_name -> bookstore.BookCategory
 	1,  // 4: bookstore.CreateBookResponse.book:type_name -> bookstore.Book
 	1,  // 5: bookstore.GetBookResponse.book:type_name -> bookstore.Book
 	0,  // 6: bookstore.ListBooksRequest.category:type_name -> bookstore.BookCategory
 	1,  // 7: bookstore.ListBooksResponse.books:type_name -> bookstore.Book
 	1,  // 8: bookstore.UpdateStockResponse.book:type_name -> bookstore.Book
-	2,  // 9: bookstore.Bookstore.CreateBook:input_type -> bookstore.CreateBookRequest
-	4,  // 10: bookstore.Bookstore.GetBook:input_type -> bookstore.GetBookRequest
-	6,  // 11: bookstore.Bookstore.ListBooks:input_type -> bookstore.ListBooksRequest
-	8,  // 12: bookstore.Bookstore.UpdateStock:input_type -> bookstore.UpdateStockRequest
-	10, // 13: bookstore.Bookstore.DeleteBook:input_type -> bookstore.DeleteBookRequest
-	3,  // 14: bookstore.Bookstore.CreateBook:output_type -> bookstore.CreateBookResponse
-	5,  // 15: bookstore.Bookstore.GetBook:output_type -> bookstore.GetBookResponse
-	7,  // 16: bookstore.Bookstore.ListBooks:output_type -> bookstore.ListBooksResponse
-	9,  // 17: bookstore.Bookstore.UpdateStock:output_type -> bookstore.UpdateStockResponse
-	13, // 18: bookstore.Bookstore.DeleteBook:output_type -> google.protobuf.Empty
-	14, // [14:19] is the sub-list for method output_type
-	9,  // [9:14] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	1,  // 9: bookstore.SearchBooksResponse.books:type_name -> bookstore.Book
+	2,  // 10: bookstore.Bookstore.CreateBook:input_type -> bookstore.CreateBookRequest
+	4,  // 11: bookstore.Bookstore.GetBook:input_type -> bookstore.GetBookRequest
+	6,  // 12: bookstore.Bookstore.ListBooks:input_type -> bookstore.ListBooksRequest
+	8,  // 13: bookstore.Bookstore.UpdateStock:input_type -> bookstore.UpdateStockRequest
+	10, // 14: bookstore.Bookstore.DeleteBook:input_type -> bookstore.DeleteBookRequest
+	3,  // 15: bookstore.Bookstore.CreateBook:output_type -> bookstore.CreateBookResponse
+	5,  // 16: bookstore.Bookstore.GetBook:output_type -> bookstore.GetBookResponse
+	7,  // 17: bookstore.Bookstore.ListBooks:output_type -> bookstore.ListBooksResponse
+	9,  // 18: bookstore.Bookstore.UpdateStock:output_type -> bookstore.UpdateStockResponse
+	15, // 19: bookstore.Bookstore.DeleteBook:output_type -> google.protobuf.Empty
+	15, // [15:20] is the sub-list for method output_type
+	10, // [10:15] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_bookstore_proto_init() }
@@ -809,7 +914,7 @@ func file_bookstore_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_bookstore_proto_rawDesc), len(file_bookstore_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

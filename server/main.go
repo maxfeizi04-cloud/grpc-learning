@@ -6,6 +6,7 @@ import (
 	pb "grpc_learning/proto"
 	"log"
 	"net"
+	"strings"
 	"sync"
 
 	"google.golang.org/grpc"
@@ -168,6 +169,44 @@ func (s *bookStoreServer) DeleteBook(ctx context.Context, req *pb.DeleteBookRequ
 	delete(s.books, req.GetId())
 	log.Printf("[DeleteBook] 删除: %s", req.GetId())
 	return &emptypb.Empty{}, nil
+}
+
+// SearchBooks 按书名模糊搜索
+// ====================================================================
+// 思路：遍历内存中所有书籍，用 strings.Contains 判断书名是否包含关键词
+//
+//	命中则加入结果切片，最后返回
+//
+// ====================================================================
+func (s *bookStoreServer) SearchBooks(ctx context.Context, req *pb.SearchBooksRequest) (*pb.SearchBooksResponse, error) {
+	// 参数校验
+	if req.GetKeyword() == "" {
+		return nil, status.Error(codes.InvalidArgument, "搜索关键字不能为空")
+	}
+	// 加读锁: 并发安全地读取 books map
+	// 用 RLock 而不是 Lock, 因为搜索是"只读"操作,不修改数据
+	// 多个搜索请求可以同时执行,互不阻塞
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	// 遍历所有书籍,逐个匹配
+	var results []*pb.Book
+	for _, book := range s.books {
+		// strings.Contains(str, substr) 判断 str 中是否包含 substr
+		// 这里判断 book 的 title 中是否包含用户输入的关键词
+		// 注意：这里是子串匹配，不是正则；区分大小写
+		if strings.Contains(book.GetTitle(), req.GetKeyword()) {
+			results = append(results, book)
+		}
+	}
+
+	log.Printf("[SearchBooks] 关键词: %q, 匹配到: %d 本", req.GetKeyword(), len(results))
+
+	return &pb.SearchBooksResponse{
+		Books: results,
+		Total: int32(len(results)),
+	}, nil
+
 }
 
 func abs(n int32) int32 {

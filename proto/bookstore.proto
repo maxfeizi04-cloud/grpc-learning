@@ -85,11 +85,11 @@ message DeleteBookRequest {
 message SearchBooksRequest {
   string keyword = 1;
 }
-
 message SearchBooksResponse {
   repeated Book books = 1;
   int32 total = 2;
 }
+
 
 
 
@@ -100,4 +100,5 @@ service Bookstore {
   rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
   rpc UpdateStock(UpdateStockRequest) returns (UpdateStockResponse);
   rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty);
+  rpc SearchBooks(SearchBooksRequest) returns (SearchBooksResponse);
 }

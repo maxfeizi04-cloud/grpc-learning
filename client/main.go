@@ -166,4 +166,32 @@ func main() {
 
 	log.Println("\n========== 测试完成 ==========")
 
+	log.Println("\n========== 练习1: 模糊搜索 ==========")
+
+	// 搜索包含 "Go" 的书籍
+	searchResp, err := client.SearchBooks(ctx, &pb.SearchBooksRequest{
+		Keyword: "Go",
+	})
+	if err != nil {
+		log.Printf("搜索失败: %v", err)
+	} else {
+		log.Printf("  搜索 \"Go\" 共 %d 个结果", searchResp.GetTotal())
+		for _, book := range searchResp.GetBooks() {
+			// 匹配到的数据
+			log.Printf("  [%s] %s", book.GetId(), book.GetTitle())
+		}
+	}
+	// 搜索包含 "三体" 的书籍
+	searchResp2, err := client.SearchBooks(ctx, &pb.SearchBooksRequest{
+		Keyword: "三体",
+	})
+	if err != nil {
+		log.Printf("搜索失败: %v", err)
+	} else {
+		log.Printf("  搜索 \"学习\" 共 %d 个结果:", searchResp2.GetTotal())
+		for _, book := range searchResp2.GetBooks() {
+			// 应该匹配到 "深度学习"
+			log.Printf("    [%s] %s", book.GetId(), book.GetTitle())
+		}
+	}
 }
