@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package stream;
+
+option  go_package = "./proto";
+
+import "google/protobuf/timestamp.proto";
+
+// ═══════════════════════════════════════════
+// 模式 ①：Unary RPC（一问一答）
+// 场景：查询服务器状态
+// ═══════════════════════════════════════════
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string reply = 1;
+  string server_time = 2;
+}
+
+// ═══════════════════════════════════════════
+// 模式 ②：Server Streaming（服务端流式）
+// 场景：实时数数器——客户端请求从 N 开始数到 M，
+//       服务端每隔 500ms 返回一个数字
+// ═══════════════════════════════════════════
+
+message CountRequest {
+  int32 start = 1;
+  int32 end = 2;
+}
+
+message CountResponse {
+  int32 current = 1;
+  int32 remaining = 2;
+  string timestamp = 3;
+}
+
+// ═══════════════════════════════════════════
+// 模式 ③：Client Streaming（客户端流式）
+// 场景：批量计算平均值——客户端不断发数字，
+//       服务端接收完毕后返回平均值
+// ═══════════════════════════════════════════
+
+message NumberRequest {
+  double number = 1;
+}
+
+message AverageResponse {
+  double average = 1;
+  int32 count = 2;
+  double sum = 3;
+}
+
+// ═══════════════════════════════════════════
+// 模式 ④：Bidirectional Streaming（双向流式）
+// 场景：实时聊天——客户端发消息，服务端实时回复
+// ═══════════════════════════════════════════
+
+message ChatRequest {
+  string username = 1;
+  string content = 2;
+}
+
+message ChatResponse {
+  string username = 1;
+  string content = 2;
+  string server_time = 3;
+  int32 online_count = 4; // 在线人数
+}
+
+// ═══════════════════════════════════════════
+// 服务定义
+// ═══════════════════════════════════════════
+
+service StreamDemo {
+  // 1. 一元调用
+  rpc Ping(PingRequest) returns (PingResponse);
+
+  // 2. 服务端流
+  rpc CountDown(CountRequest) returns (stream CountResponse);
+
+  // 3. 客户端流
+  rpc ComputeAverage(stream NumberRequest) returns (AverageResponse);
+
+  // 4. 双向流
+  rpc LiveChat(stream ChatRequest) returns (stream ChatResponse);
+}
+
+
