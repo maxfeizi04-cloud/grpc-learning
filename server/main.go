@@ -209,6 +209,102 @@ func (s *bookStoreServer) SearchBooks(ctx context.Context, req *pb.SearchBooksRe
 
 }
 
+// ====================================================================
+// 练习 2（进阶）：BorrowBook —— 借书（库存 -1 或 -quantity）
+// ====================================================================
+// 思路：
+//   1. 校验参数（ID、数量必须 > 0）
+//   2. 加写锁（会修改库存）
+//   3. 查找书籍，检查库存是否充足
+//   4. 库存 >= quantity → 扣减库存，返回成功
+//   5. 库存 < quantity → 返回 FailedPrecondition 错误
+// ====================================================================
+
+func (s *bookStoreServer) BorrowBook(ctx context.Context, req *pb.BorrowBookRequest) (*pb.BorrowBookResponse, error) {
+	// 参数校验
+	if req.GetBookId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "书籍 ID 不能为空")
+	}
+	quantity := req.GetQuantity()
+	if quantity <= 0 {
+		quantity = 1
+	}
+	// 加写锁: 要修改库存,必须用 Lock (排他锁), 不能用 RLock
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// 查找书籍
+	book, ok := s.books[req.GetBookId()]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "书籍 %s 不存在", req.GetBookId())
+	}
+
+	// 检查库存是否充足
+	if book.GetStock() < quantity {
+		// codes.FailedPrecondition = 前置条件不满足
+		// 适合"操作本身合法，但当前状态不允许"的场景
+		// 比如：借书是合法操作，但库存不够这个前置条件没满足
+		return nil, status.Errorf(codes.FailedPrecondition, "库存不足: 当前库存 %d, 想借 %d", book.GetStock(), quantity)
+	}
+
+	// 库存减扣
+	book.Stock = book.GetStock() - quantity
+
+	// 拼接提示信息
+	msg := fmt.Sprintf("借出 %d 本, 当前剩余库存 %d", quantity, book.GetStock())
+	log.Printf("[BorrowBook] %s: %s", req.GetBookId(), msg)
+
+	// 返回更新后的书籍消息
+	return &pb.BorrowBookResponse{
+		Book:    book,
+		Message: msg,
+	}, nil
+}
+
+// ====================================================================
+// 练习 2（进阶）：ReturnBook —— 还书（库存 +1 或 +quantity）
+// ====================================================================
+// 思路：
+//   1. 校验参数
+//   2. 加写锁
+//   3. 查找书籍
+//   4. 增加库存（还书没有上限检查，除非你想设最大库存）
+// ====================================================================
+
+func (s *bookStoreServer) ReturnBook(ctx context.Context, req *pb.ReturnBookRequest) (*pb.ReturnBookResponse, error) {
+	// 参数校验
+	if req.GetBookId() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "书籍 ID 不能为空")
+	}
+
+	// 还书数量,默认为 0
+	quantity := req.GetQuantity()
+	if quantity < 0 {
+		quantity = 0
+	}
+
+	// 加写锁
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// 查找书籍
+	book, ok := s.books[req.GetBookId()]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "书籍 %s 不存在", req.GetBookId())
+	}
+
+	// 增加库存
+	book.Stock = quantity + book.GetStock()
+
+	msg := fmt.Sprintf("归还 %d 本, 当亲库存 %d", quantity, book.GetStock())
+	log.Printf("[ReturnBook] %s: %s", req.GetBookId(), msg)
+
+	return &pb.ReturnBookResponse{
+		Book:    book,
+		Message: msg,
+	}, nil
+}
+
 func abs(n int32) int32 {
 	if n < 0 {
 		return -n

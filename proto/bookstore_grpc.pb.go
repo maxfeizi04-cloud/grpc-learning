@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.1
-// source: bookstore.proto
+// source: proto/bookstore.proto
 
 package proto
 
@@ -26,6 +26,8 @@ const (
 	Bookstore_UpdateStock_FullMethodName = "/bookstore.Bookstore/UpdateStock"
 	Bookstore_DeleteBook_FullMethodName  = "/bookstore.Bookstore/DeleteBook"
 	Bookstore_SearchBooks_FullMethodName = "/bookstore.Bookstore/SearchBooks"
+	Bookstore_BorrowBook_FullMethodName  = "/bookstore.Bookstore/BorrowBook"
+	Bookstore_ReturnBook_FullMethodName  = "/bookstore.Bookstore/ReturnBook"
 )
 
 // BookstoreClient is the client API for Bookstore service.
@@ -40,6 +42,8 @@ type BookstoreClient interface {
 	UpdateStock(ctx context.Context, in *UpdateStockRequest, opts ...grpc.CallOption) (*UpdateStockResponse, error)
 	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	SearchBooks(ctx context.Context, in *SearchBooksRequest, opts ...grpc.CallOption) (*SearchBooksResponse, error)
+	BorrowBook(ctx context.Context, in *BorrowBookRequest, opts ...grpc.CallOption) (*BorrowBookResponse, error)
+	ReturnBook(ctx context.Context, in *ReturnBookRequest, opts ...grpc.CallOption) (*ReturnBookResponse, error)
 }
 
 type bookstoreClient struct {
@@ -110,6 +114,26 @@ func (c *bookstoreClient) SearchBooks(ctx context.Context, in *SearchBooksReques
 	return out, nil
 }
 
+func (c *bookstoreClient) BorrowBook(ctx context.Context, in *BorrowBookRequest, opts ...grpc.CallOption) (*BorrowBookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BorrowBookResponse)
+	err := c.cc.Invoke(ctx, Bookstore_BorrowBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookstoreClient) ReturnBook(ctx context.Context, in *ReturnBookRequest, opts ...grpc.CallOption) (*ReturnBookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReturnBookResponse)
+	err := c.cc.Invoke(ctx, Bookstore_ReturnBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookstoreServer is the server API for Bookstore service.
 // All implementations must embed UnimplementedBookstoreServer
 // for forward compatibility.
@@ -122,6 +146,8 @@ type BookstoreServer interface {
 	UpdateStock(context.Context, *UpdateStockRequest) (*UpdateStockResponse, error)
 	DeleteBook(context.Context, *DeleteBookRequest) (*emptypb.Empty, error)
 	SearchBooks(context.Context, *SearchBooksRequest) (*SearchBooksResponse, error)
+	BorrowBook(context.Context, *BorrowBookRequest) (*BorrowBookResponse, error)
+	ReturnBook(context.Context, *ReturnBookRequest) (*ReturnBookResponse, error)
 	mustEmbedUnimplementedBookstoreServer()
 }
 
@@ -149,6 +175,12 @@ func (UnimplementedBookstoreServer) DeleteBook(context.Context, *DeleteBookReque
 }
 func (UnimplementedBookstoreServer) SearchBooks(context.Context, *SearchBooksRequest) (*SearchBooksResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SearchBooks not implemented")
+}
+func (UnimplementedBookstoreServer) BorrowBook(context.Context, *BorrowBookRequest) (*BorrowBookResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BorrowBook not implemented")
+}
+func (UnimplementedBookstoreServer) ReturnBook(context.Context, *ReturnBookRequest) (*ReturnBookResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReturnBook not implemented")
 }
 func (UnimplementedBookstoreServer) mustEmbedUnimplementedBookstoreServer() {}
 func (UnimplementedBookstoreServer) testEmbeddedByValue()                   {}
@@ -279,6 +311,42 @@ func _Bookstore_SearchBooks_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bookstore_BorrowBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BorrowBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookstoreServer).BorrowBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bookstore_BorrowBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookstoreServer).BorrowBook(ctx, req.(*BorrowBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Bookstore_ReturnBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReturnBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookstoreServer).ReturnBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bookstore_ReturnBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookstoreServer).ReturnBook(ctx, req.(*ReturnBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bookstore_ServiceDesc is the grpc.ServiceDesc for Bookstore service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -310,7 +378,15 @@ var Bookstore_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "SearchBooks",
 			Handler:    _Bookstore_SearchBooks_Handler,
 		},
+		{
+			MethodName: "BorrowBook",
+			Handler:    _Bookstore_BorrowBook_Handler,
+		},
+		{
+			MethodName: "ReturnBook",
+			Handler:    _Bookstore_ReturnBook_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "bookstore.proto",
+	Metadata: "proto/bookstore.proto",
 }
