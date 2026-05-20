@@ -90,6 +90,32 @@ message SearchBooksResponse {
   int32 total = 2;
 }
 
+// 借书 / 还书
+
+// 借书请求
+message BorrowBookRequest {
+  string book_id = 1;
+  int32 quantity = 2;
+}
+
+// 借书响应
+message BorrowBookResponse {
+  Book book = 1;      // 借书之后的书籍信息(库存已更新)
+  string message = 2; // 提示信息
+}
+
+// 还书请求
+message ReturnBookRequest {
+  string book_id = 1;     // 要还书的 ID
+  int32 quantity = 2;     // 还几本(默认 1)
+}
+
+// 还书响应
+message ReturnBookResponse {
+  Book book = 1;          // 还完之后的书籍信息(库存已更新)
+  string message = 2;     // 提示信息
+}
+
 
 
 
@@ -101,4 +127,6 @@ service Bookstore {
   rpc UpdateStock(UpdateStockRequest) returns (UpdateStockResponse);
   rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty);
   rpc SearchBooks(SearchBooksRequest) returns (SearchBooksResponse);
+  rpc BorrowBook(BorrowBookRequest) returns (BorrowBookResponse);
+  rpc ReturnBook(ReturnBookRequest) returns (ReturnBookResponse);
 }

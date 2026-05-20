@@ -194,4 +194,48 @@ func main() {
 			log.Printf("    [%s] %s", book.GetId(), book.GetTitle())
 		}
 	}
+
+	// ====================================================================
+	// 练习 2：测试借书 / 还书
+	// ====================================================================
+	log.Println("\n========== 练习2: 借书 / 还书 ==========")
+
+	if len(bookIDs) > 0 {
+		targetID := bookIDs[0] //用第一本书测试
+
+		// 借 5 本
+		borrowResp, err := client.BorrowBook(ctx, &pb.BorrowBookRequest{
+			BookId:   targetID,
+			Quantity: 5,
+		})
+		if err != nil {
+			log.Printf("  借书失败: %v", err)
+		} else {
+			log.Printf("  借书成功: %s", borrowResp.GetMessage())
+			log.Printf("  剩余库存: %d", borrowResp.GetBook().GetStock())
+		}
+
+		// 借太多 (故意测试库存不足的错误)
+		_, err = client.BorrowBook(ctx, &pb.BorrowBookRequest{
+			BookId:   targetID,
+			Quantity: 9999,
+		})
+		if err != nil {
+			// 预期会收到 FailedPrecondition 错误
+			log.Printf("  预期错误: %v", err)
+		}
+
+		// 还 3 本
+		returnResp, err := client.ReturnBook(ctx, &pb.ReturnBookRequest{
+			BookId:   targetID,
+			Quantity: 3,
+		})
+		if err != nil {
+			log.Printf("  还书失败: %v", err)
+		} else {
+			log.Printf("  还书成功: %s", returnResp.GetMessage())
+			log.Printf("  当前库存: %d", returnResp.GetBook().GetStock())
+		}
+	}
+
 }
